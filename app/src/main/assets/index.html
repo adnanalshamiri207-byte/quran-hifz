@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>رفيق الحفظ</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;
+ font-family:Tahoma,Arial,sans-serif;
+ background:#f5f7f5;
+ color:#17231d;
+}
+header{
+ background:linear-gradient(135deg,#123d2d,#1e684b);
+ color:white;
+ padding:25px 18px 20px;
+ border-radius:0 0 28px 28px;
+}
+header h1{margin:0;font-size:27px}
+header p{margin:7px 0 0;opacity:.85}
+
+.container{padding:16px;padding-bottom:90px}
+
+.card{
+ background:white;
+ border-radius:18px;
+ padding:17px;
+ margin-bottom:14px;
+ box-shadow:0 3px 15px rgba(0,0,0,.06);
+}
+
+.title{
+ font-size:18px;
+ font-weight:bold;
+ margin-bottom:12px;
+ color:#164b37;
+}
+
+.progress{
+ height:12px;
+ background:#e6ebe8;
+ border-radius:20px;
+ overflow:hidden;
+}
+.progress div{
+ height:100%;
+ background:#26845f;
+ width:0%;
+ transition:.4s;
+}
+
+.stats{
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ gap:8px;
+ margin-top:14px;
+}
+.stat{
+ text-align:center;
+ background:#f2f7f4;
+ padding:12px 4px;
+ border-radius:12px;
+}
+.stat strong{
+ display:block;
+ font-size:20px;
+ color:#176344;
+}
+.stat span{font-size:12px;color:#66736c}
+
+label{
+ display:block;
+ margin:10px 0 6px;
+ font-weight:bold;
+}
+
+input,select,textarea{
+ width:100%;
+ padding:12px;
+ border:1px solid #d9dfdc;
+ border-radius:12px;
+ font-size:16px;
+ background:white;
+}
+textarea{min-height:85px;resize:vertical}
+
+button{
+ border:0;
+ border-radius:12px;
+ padding:13px;
+ font-size:16px;
+ font-weight:bold;
+ cursor:pointer;
+}
+
+.primary{
+ width:100%;
+ background:#176344;
+ color:white;
+ margin-top:12px;
+}
+.secondary{
+ background:#e8f3ed;
+ color:#176344;
+ width:100%;
+ margin-top:8px;
+}
+.danger{
+ background:#fff0f0;
+ color:#a92b2b;
+ width:100%;
+ margin-top:8px;
+}
+
+.ayah{
+ background:#fbfaf3;
+ border:1px solid #eee8cd;
+ border-radius:15px;
+ padding:18px;
+ font-size:22px;
+ line-height:2;
+ text-align:center;
+ margin-top:10px;
+}
+
+.hidden{display:none}
+
+.check{
+ display:flex;
+ gap:9px;
+ align-items:center;
+ padding:11px;
+ background:#f5f8f6;
+ border-radius:10px;
+ margin:7px 0;
+}
+.check input{width:auto;transform:scale(1.3)}
+
+nav{
+ position:fixed;
+ bottom:0;
+ left:0;
+ right:0;
+ height:68px;
+ background:white;
+ box-shadow:0 -2px 15px rgba(0,0,0,.08);
+ display:grid;
+ grid-template-columns:repeat(4,1fr);
+ z-index:20;
+}
+nav button{
+ background:white;
+ color:#69736e;
+ border-radius:0;
+ font-size:12px;
+ padding:8px 2px;
+}
+nav button span{
+ display:block;
+ font-size:22px;
+ margin-bottom:2px;
+}
+nav button.active{color:#176344}
+
+.quote{
+ text-align:center;
+ line-height:1.9;
+ color:#53615a;
+}
+
+.badge{
+ display:inline-block;
+ background:#e5f2eb;
+ color:#176344;
+ border-radius:20px;
+ padding:5px 10px;
+ font-size:12px;
+}
+
+.range{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:10px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+ <h1>رفيق الحفظ</h1>
+ <p>احفظ • راجع • اختبر نفسك</p>
+</header>
+
+<div class="container">
+
+<section id="home">
+
+ <div class="card">
+  <div class="title">تقدمك في سورة البقرة</div>
+  <div class="progress"><div id="bar"></div></div>
+
+  <div class="stats">
+   <div class="stat">
+    <strong id="saved">0</strong>
+    <span>آية محفوظة</span>
+   </div>
+   <div class="stat">
+    <strong id="percent">0%</strong>
+    <span>الإنجاز</span>
+   </div>
+   <div class="stat">
+    <strong id="days">0</strong>
+    <span>أيام المتابعة</span>
+   </div>
+  </div>
+ </div>
+
+ <div class="card">
+  <div class="title">حفظ اليوم</div>
+
+  <label>آخر آية وصلت إليها</label>
+  <input id="lastAyah" type="number" min="0" max="286"
+         placeholder="مثال: 141">
+
+  <button class="primary" onclick="saveProgress()">
+   حفظ التقدم
+  </button>
+
+  <p id="message" style="text-align:center"></p>
+ </div>
+
+ <div class="card quote">
+  <span class="badge">ورد اليوم</span>
+  <p>
+   الحفظ القوي لا يعتمد على كثرة التكرار في يوم واحد،
+   بل على المراجعة المستمرة.
+  </p>
+ </div>
+
+</section>
+
+
+<section id="plan" class="hidden">
+
+ <div class="card">
+  <div class="title">خطة الحفظ</div>
+
+  <label>من الآية</label>
+  <input id="fromAyah" type="number" min="1" max="286">
+
+  <label>إلى الآية</label>
+  <input id="toAyah" type="number" min="1" max="286">
+
+  <label>عدد الأيام</label>
+  <input id="planDays" type="number" min="1" value="7">
+
+  <button class="primary" onclick="makePlan()">
+   إنشاء الخطة
+  </button>
+
+  <div id="planResult"></div>
+ </div>
+
+</section>
+
+
+<section id="review" class="hidden">
+
+ <div class="card">
+  <div class="title">مراجعة المحفوظ</div>
+
+  <p>استخدم هذه الطريقة لكل مقطع محفوظ:</p>
+
+  <div class="check">
+   <input type="checkbox">
+   <span>تسميع المقطع دون النظر إلى المصحف</span>
+  </div>
+
+  <div class="check">
+   <input type="checkbox">
+   <span>مراجعة مواضع الأخطاء فقط</span>
+  </div>
+
+  <div class="check">
+   <input type="checkbox">
+   <span>ربط نهاية كل آية ببداية الآية التالية</span>
+  </div>
+
+  <div class="check">
+   <input type="checkbox">
+   <span>تسميع المقطع مرة أخرى كاملًا</span>
+  </div>
+
+ </div>
+
+ <div class="card">
+  <div class="title">جدول المراجعة المتباعدة</div>
+  <p>راجع الحفظ الجديد بعد:</p>
+  <div class="ayah">
+   اليوم نفسه<br>
+   ثم بعد يوم<br>
+   ثم 3 أيام<br>
+   ثم 7 أيام<br>
+   ثم 14 يومًا<br>
+   ثم 30 يومًا
+  </div>
+ </div>
+
+</section>
+
+
+<section id="test" class="hidden">
+
+ <div class="card">
+  <div class="title">اختبار التسميع</div>
+
+  <p>
+   اختر نطاقًا من محفوظك، وسيختار التطبيق لك رقم آية
+   عشوائيًا لتبدأ التسميع منها.
+  </p>
+
+  <div class="range">
+   <div>
+    <label>من</label>
+    <input id="testFrom" type="number" min="1" max="286" value="1">
+   </div>
+
+   <div>
+    <label>إلى</label>
+    <input id="testTo" type="number" min="1" max="286" value="141">
+   </div>
+  </div>
+
+  <button class="primary" onclick="randomTest()">
+   اختر لي موضعًا
+  </button>
+
+  <div id="testResult" class="ayah hidden"></div>
+
+  <button id="nextTest"
+          class="secondary hidden"
+          onclick="randomTest()">
+   اختبار آخر
+  </button>
+ </div>
+
+ <div class="card">
+  <div class="title">تقييم التسميع</div>
+
+  <button class="secondary"
+          onclick="recordResult('excellent')">
+   ممتاز — بدون أخطاء
+  </button>
+
+  <button class="secondary"
+          onclick="recordResult('good')">
+   جيد — أخطاء بسيطة
+  </button>
+
+  <button class="danger"
+          onclick="recordResult('repeat')">
+   يحتاج إلى مراجعة
+  </button>
+
+  <p id="testStats" style="text-align:center"></p>
+ </div>
+
+</section>
+
+</div>
+
+
+<nav>
+ <button id="nHome" class="active" onclick="showPage('home',this)">
+  <span>⌂</span>الرئيسية
+ </button>
+
+ <button onclick="showPage('plan',this)">
+  <span>▦</span>الخطة
+ </button>
+
+ <button onclick="showPage('review',this)">
+  <span>↻</span>المراجعة
+ </button>
+
+ <button onclick="showPage('test',this)">
+  <span>✓</span>اختبار
+ </button>
+</nav>
+
+
+<script>
+
+const TOTAL=286;
+
+function showPage(id,btn){
+ document.querySelectorAll("section").forEach(s=>{
+  s.classList.add("hidden");
+ });
+
+ document.getElementById(id).classList.remove("hidden");
+
+ document.querySelectorAll("nav button").forEach(b=>{
+  b.classList.remove("active");
+ });
+
+ btn.classList.add("active");
+ window.scrollTo(0,0);
+}
+
+function loadData(){
+
+ let last=parseInt(localStorage.getItem("lastAyah")||0);
+
+ document.getElementById("lastAyah").value=last || "";
+
+ document.getElementById("saved").textContent=last;
+
+ let p=Math.round(last/TOTAL*100);
+
+ document.getElementById("percent").textContent=p+"%";
+ document.getElementById("bar").style.width=p+"%";
+
+ let first=localStorage.getItem("firstDay");
+
+ if(!first){
+  first=new Date().toISOString();
+  localStorage.setItem("firstDay",first);
+ }
+
+ let diff=Math.floor(
+  (new Date()-new Date(first))/(1000*60*60*24)
+ )+1;
+
+ document.getElementById("days").textContent=diff;
+
+ updateTestStats();
+}
+
+function saveProgress(){
+
+ let n=parseInt(document.getElementById("lastAyah").value);
+
+ if(!n || n<1 || n>TOTAL){
+  document.getElementById("message").textContent=
+   "أدخل رقم آية من 1 إلى 286";
+  return;
+ }
+
+ localStorage.setItem("lastAyah",n);
+
+ document.getElementById("message").textContent=
+  "تم حفظ تقدمك ✓";
+
+ loadData();
+}
+
+function makePlan(){
+
+ let from=parseInt(document.getElementById("fromAyah").value);
+ let to=parseInt(document.getElementById("toAyah").value);
+ let days=parseInt(document.getElementById("planDays").value);
+
+ if(!from || !to || !days || from>to){
+  alert("تحقق من نطاق الآيات وعدد الأيام");
+  return;
+ }
+
+ let total=to-from+1;
+ let daily=Math.ceil(total/days);
+
+ let html="<div class='ayah' style='font-size:16px;text-align:right'>";
+
+ let start=from;
+
+ for(let d=1;d<=days && start<=to;d++){
+
+  let end=Math.min(start+daily-1,to);
+
+  html+="<b>اليوم "+d+"</b>: الآيات "+
+        start+" – "+end+"<br>";
+
+  start=end+1;
+ }
+
+ html+="</div>";
+
+ document.getElementById("planResult").innerHTML=html;
+}
+
+function randomTest(){
+
+ let from=parseInt(document.getElementById("testFrom").value);
+ let to=parseInt(document.getElementById("testTo").value);
+
+ if(!from || !to || from>to || to>TOTAL){
+  alert("تحقق من نطاق الاختبار");
+  return;
+ }
+
+ let n=Math.floor(Math.random()*(to-from+1))+from;
+
+ let box=document.getElementById("testResult");
+
+ box.innerHTML=
+  "ابدأ التسميع من<br><strong>الآية رقم "+n+"</strong>";
+
+ box.classList.remove("hidden");
+ document.getElementById("nextTest").classList.remove("hidden");
+}
+
+function recordResult(type){
+
+ let data=JSON.parse(localStorage.getItem("tests")||
+  '{"excellent":0,"good":0,"repeat":0}');
+
+ data[type]++;
+
+ localStorage.setItem("tests",JSON.stringify(data));
+
+ updateTestStats();
+}
+
+function updateTestStats(){
+
+ let data=JSON.parse(localStorage.getItem("tests")||
+  '{"excellent":0,"good":0,"repeat":0}');
+
+ let total=data.excellent+data.good+data.repeat;
+
+ document.getElementById("testStats").innerHTML=
+  "عدد الاختبارات: <b>"+total+"</b><br>"+
+  "ممتاز: "+data.excellent+
+  " | جيد: "+data.good+
+  " | مراجعة: "+data.repeat;
+}
+
+loadData();
+
+</script>
+
+</body>
+  </html>
